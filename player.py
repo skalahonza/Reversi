@@ -25,13 +25,12 @@ class MyPlayer:
         self.valid_moves = []
 
     def move(self, board):
-        valid_moves = self.get_valid_moves(board, self.my_color)
-        # return greedy move
-        self.valid_moves = valid_moves
+        self.valid_moves = self.get_valid_moves(board, self.my_color)
+        # get valid moves for my player
         max = 0
         move = None
         # find maximum
-        for item in valid_moves:
+        for item in self.valid_moves:
             if item.points > max:
                 max = item.points
                 move = item.move
