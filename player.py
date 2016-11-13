@@ -37,7 +37,7 @@ class MyPlayer:
         # return greedy move
         self.valid_moves = valid_moves
         max = 0
-        move = (0,0)
+        move = None
         # find maximum
         for item in valid_moves:
             if item.points > max:
