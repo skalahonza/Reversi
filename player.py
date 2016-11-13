@@ -25,15 +25,7 @@ class MyPlayer:
         self.valid_moves = []
 
     def move(self, board):
-        valid_moves = []
-        # Check all fields, and find out how many points I get if I play there
-        for x in range(8):
-            for y in range(8):
-                # exam free spaces only
-                if board[x][y] == self.space:
-                    gain = self.check_move(board, x, y, self.my_color)
-                    if gain > 0:
-                        valid_moves.append(Move((x, y), gain))
+        valid_moves = self.get_valid_moves(board, self.my_color)
         # return greedy move
         self.valid_moves = valid_moves
         max = 0
@@ -45,8 +37,24 @@ class MyPlayer:
                 move = item.move
         return move
 
+    def get_valid_moves(self, board, symbol):
+        valid_moves = []
+        # returns all valid moves for given symbol on a current board
+        # Check all fields, and find out how many points I get if I play there
+        for x in range(8):
+            for y in range(8):
+                # exam free spaces only
+                if board[x][y] == self.space:
+                    gain = self.check_move(board, x, y, symbol)
+                    if gain > 0:
+                        valid_moves.append(Move((x, y), gain))
+        if valid_moves == []:
+            return None
+        else:
+            return valid_moves
+
     def check_move(self, board, x, y, symbol):
-        # inspect if the field is a valid move
+        # inspect if the field is a valid move for a given symbol
         # Check all directions for other symbol and count the possible points
         # h and v are directional vectors
         points = 0
