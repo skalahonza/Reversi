@@ -69,9 +69,9 @@ class MyPlayer:
         return points
 
     def count_points(self, board, x, y, horizontal_direction, vertical_direction):
-        # Count how many stones are in a given direction - basically returns the point gain for a move
+        # Count how many stones are in a given direction
         # k is a scalar multipliers for directional vectors
-        # returns 0 if the move is not valid
+        # returns 0 if the move is not valid - space found between stones
         symbol = board[x][y]
         if symbol == self.space:
             return 0
