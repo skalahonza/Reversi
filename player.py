@@ -40,19 +40,19 @@ class MyPlayer:
         valid_moves = []
         # returns all valid moves for given symbol on a current board
         # Check all fields, and find out how many points I get if I play there
-        for x in range(8):
-            for y in range(8):
+        for r in range(8):
+            for c in range(8):
                 # exam free spaces only
-                if board[x][y] == self.space:
-                    gain = self.check_move(board, x, y, symbol)
+                if board[r][c] == self.space:
+                    gain = self.check_move(board, r, c, symbol)
                     if gain > 0:
-                        valid_moves.append(Move((x, y), gain))
+                        valid_moves.append(Move((r, c), gain))
         if valid_moves == []:
             return None
         else:
             return valid_moves
 
-    def check_move(self, board, x, y, symbol):
+    def check_move(self, board, r, c, symbol):
         # inspect if the field is a valid move for a given symbol
         # Check all directions for other symbol and count the possible points
         # h and v are directional vectors
@@ -60,27 +60,27 @@ class MyPlayer:
         for h in [-1, 0, 1]:
             for v in [-1, 0, 1]:
                 if v != 0 or h != 0:
-                    if is_field_legit(x + h, y + v):
-                        examined = board[x + h][y + v]
+                    if is_field_legit(r + h, c + v):
+                        examined = board[r + h][c + v]
                         if examined != self.space and examined != symbol:
-                            points += self.count_points(board, x + h, y + v, h, v)
+                            points += self.count_points(board, r + h, c + v, h, v)
         # return points gain for current move
         # returns 0 if the move is not valid
         return points
 
-    def count_points(self, board, x, y, horizontal_direction, vertical_direction):
+    def count_points(self, board, r, c, horizontal_direction, vertical_direction):
         # Count how many stones are in a given direction
         # k is a scalar multipliers for directional vectors
         # returns 0 if the move is not valid - space found between stones
-        symbol = board[x][y]
+        symbol = board[r][c]
         if symbol == self.space:
             return 0
         count = 1
         for k in range(1, 9):
-            if is_field_legit(x + k * horizontal_direction, y + k * vertical_direction):
-                if board[x + k * horizontal_direction][y + k * vertical_direction] == self.space:
+            if is_field_legit(r + k * horizontal_direction, c + k * vertical_direction):
+                if board[r + k * horizontal_direction][c + k * vertical_direction] == self.space:
                     return 0
-                elif board[x + k * horizontal_direction][y + k * vertical_direction] == symbol:
+                elif board[r + k * horizontal_direction][c + k * vertical_direction] == symbol:
                     count += 1
                 else:
                     return count
@@ -88,10 +88,16 @@ class MyPlayer:
                 return 0
         return count
 
+    def simulate_move(self, board, r, c):
+        """ Performs a move on the board and returns a new (transformed) board """
+        copy_board = board[:]
+        symborl = board[r,c]
+        pass
 
-def is_field_legit(x, y):
+
+def is_field_legit(r, c):
     # checks if the field is located within a board
-    return 0 <= x < 8 and 0 <= y < 8
+    return 0 <= r < 8 and 0 <= c < 8
 
 
 # Tests
