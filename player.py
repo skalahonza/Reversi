@@ -2,7 +2,7 @@
 # 2 rounds
 # 1 second per move
 # single thread only
-from copy import copy, deepcopy
+from copy import deepcopy
 
 
 class Move:
@@ -11,6 +11,15 @@ class Move:
     def __init__(self, move, points):
         self.move = move
         self.points = points
+
+    def __gt__(self, other):
+        return self.points > other.points
+
+    def __eq__(self, other):
+        return self.move == other.move
+
+    def __lt__(self, other):
+        return self.points < other.points
 
 
 class MyPlayer:
@@ -47,7 +56,7 @@ class MyPlayer:
                     gain = self.check_move(board, r, c, symbol)
                     if gain > 0:
                         valid_moves.append(Move((r, c), gain))
-        if valid_moves == []:
+        if not valid_moves:
             return None
         else:
             return valid_moves
