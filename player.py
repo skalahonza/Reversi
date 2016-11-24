@@ -2,7 +2,7 @@
 # 2 rounds
 # 1 second per move
 # single thread only
-import random
+from copy import copy, deepcopy
 
 
 class Move:
@@ -88,11 +88,35 @@ class MyPlayer:
                 return 0
         return count
 
-    def simulate_move(self, board, r, c):
+    def simulate_move(self, board, r, c, symbol):
         """ Performs a move on the board and returns a new (transformed) board """
-        copy_board = board[:]
-        symborl = board[r,c]
-        pass
+        board_copy = deepcopy(board)
+        board_copy[r][c] = symbol
+
+        for v in [-1, 0, 1]:
+            for h in [-1, 0, 1]:
+                stones = []
+                if v == 0 == h:
+                    continue
+                row = r
+                col = c
+                row += v
+                col += h
+                while is_field_legit(row, col):
+                    # if it is other symbol
+                    if board_copy[row][col] != symbol and board_copy[row][col] != self.space:
+                        stones.append((row, col))
+                    # if space found - oon t flip this line
+                    elif board_copy[row][col] == self.space:
+                        break
+                    # same symbol found flip all stones
+                    elif board_copy[row][col] == symbol:
+                        for a, b in stones:
+                            board_copy[a][b] = symbol
+                        break
+                    row += v
+                    col += h
+        return board_copy
 
 
 def is_field_legit(r, c):
@@ -117,8 +141,8 @@ if __name__ == "__main__":
         print(row)
     print("------------")
     move = player.move(sample_board)
-    for item in player.valid_moves:
-        sample_board[item.move[0]][item.move[1]] = "X"
+    """for item in player.valid_moves:
+        sample_board[item.move[0]][item.move[1]] = "X"""
 
     for row in sample_board:
         print(row)
@@ -127,3 +151,7 @@ if __name__ == "__main__":
         print(item.move, " - ", item.points)
 
     print("returned: ", move)
+    board = player.simulate_move(sample_board, move[0], move[1], player.my_color)
+    print("------------")
+    for row in board:
+        print(row)
