@@ -36,14 +36,37 @@ class MyPlayer:
     def move(self, board):
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         # get valid moves for my player
-        max = 0
-        move = None
-        # find maximum
-        for item in self.valid_moves:
-            if item.points > max:
-                max = item.points
-                move = item.move
-        return move
+        if not self.valid_moves:
+            return None
+
+        # Examine
+        return (self.ideal_move(3, self.valid_moves)).move
+
+    def ideal_move(self, depth_level, moves):
+        """ Examines moves until it reaches the given space depth_level """
+        while depth_level > 0:
+            depth_level -= 1
+        pass
+
+    def eval_board(self, board, player, opponent):
+        board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
+                      [-20, -40, -5, -5, -5, -5, -40, -20],
+                      [20, -5, 15, 3, 3, 15, -5, 20],
+                      [5, -5, 3, 3, 3, 3, -5, 5],
+                      [5, -5, 3, 3, 3, 3, -5, 5],
+                      [20, -5, 15, 3, 3, 15, -5, 20],
+                      [-20, -40, -5, -5, -5, -5, -40, -20],
+                      [120, -20, 20, 5, 5, 20, -20, 120]
+                      ]
+        scorePlayer = 0
+        scoreOpponent = 0
+        for r in board:
+            for c in board[r]:
+                if board[r][c] == player:
+                    scorePlayer += board_mask[r][c]
+                elif board[r][c] == opponent:
+                    scoreOpponent += board_mask[r][c]
+        return scorePlayer - scoreOpponent
 
     def get_valid_moves(self, board, symbol):
         valid_moves = []
