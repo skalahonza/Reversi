@@ -27,15 +27,6 @@ class Move:
         self.move = move
         self.points = points
 
-    def __gt__(self, other):
-        return self.points > other.points
-
-    def __eq__(self, other):
-        return self.move == other.move
-
-    def __lt__(self, other):
-        return self.points < other.points
-
 
 class MyPlayer:
     """Player targets the highest gain for current move"""
