@@ -37,7 +37,7 @@ class MyPlayer:
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth, evaluate):
         """
-        Find the best legal move for player, searching to the specified depth. Standard alpha beta algorithm
+        Find the best legal move for player, searching to the given depth. Standard alpha beta algorithm
         :rtype: Move
         :param symbol: player color
         :param board: playing board
@@ -45,7 +45,7 @@ class MyPlayer:
         :param beta: Max opponent gain
         :param depth: How many moves ahead I see
         :param evaluate: Function that computes the board value
-        :return: The considering given ammount of moves
+        :return: The considering given amount of moves
         """
         # last examined board - return the board value for current symbol
         if depth == 0:

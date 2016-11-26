@@ -108,8 +108,8 @@ if __name__ == "__main__":
     if len(args) == 0:
         print('No arguments given.\nRunning game with two random players.')
         # TODO Change players
-        p1 = greedy.MyPlayer(p1_color, p2_color)
-        #p1 = random_player.MyPlayer(p1_color, p2_color)
+        #p1 = greedy.MyPlayer(p1_color, p2_color)
+        p1 = random_player.MyPlayer(p1_color, p2_color)
         p2 = player.MyPlayer(p2_color, p1_color)
         game = HeadlessReversiCreator(p1, p1_color, p2, p2_color, 8)
         game.play_game()
