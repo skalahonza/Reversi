@@ -5,7 +5,7 @@
 from copy import deepcopy
 
 # Tombstone constants
-MAX_SCORE = 1176  # biggest score achievable
+MAX_SCORE = 64  # biggest score achievable
 MIN_SCORE = -MAX_SCORE
 
 
