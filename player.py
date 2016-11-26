@@ -124,12 +124,18 @@ class MyPlayer:
         else:
             return valid_moves
 
-    def check_move(self, board, r, c, symbol, bfs=True):
-        # inspect if the field is a valid move for a given symbol
-        # Check all directions for other symbol and count the possible points
-        # h and v are directional vectors
-        # bfs true --> checks only if the move is valid, doesn't count the points - for faster heuristics
+    def check_move(self, board, r, c, symbol):
+        """
+        Inspects if the field is a valid move for a given symbol
+        Check all directions for other symbol and count the possible points
+        :param board:
+        :param r: row
+        :param c: column
+        :param symbol: examined symbol
+        :return: minimum of points, that the move provides, returns 0 if the move is not valid
+        """
         points = 0
+        # h and v are directional vectors
         for h in [-1, 0, 1]:
             for v in [-1, 0, 1]:
                 if v != 0 or h != 0:
@@ -137,10 +143,9 @@ class MyPlayer:
                         examined = board[r + h][c + v]
                         if examined != self.space and examined != symbol:
                             points += self.count_points(board, r + h, c + v, h, v)
-                        if points > 0 and bfs:
+                        # If I can flip some stones - the move is valid
+                        if points > 0:
                             return points
-        # return points gain for current move
-        # returns 0 if the move is not valid
         return points
 
     def count_points(self, board, r, c, horizontal_direction, vertical_direction):
