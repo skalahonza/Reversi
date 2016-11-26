@@ -16,7 +16,7 @@ board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
               ]
 
 # Values for endgame boards are big constants.
-MAX_SCORE = sum(map(abs, board_mask))
+MAX_SCORE = 1176  # biggest score achievable
 MIN_SCORE = -MAX_SCORE
 
 
@@ -50,12 +50,12 @@ class MyPlayer:
 
     def move(self, board):
         self.valid_moves = self.get_valid_moves(board, self.my_color)
-        # get valid moves for my player
+        if len(self.valid_moves) == 1:
+            return self.valid_moves[0].move
         if not self.valid_moves:
             return None
-        return self.valid_moves[0].move
-        # Examine
-        # return (self.ideal_move(3, self.valid_moves)).move
+        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 3)
+        return move.move
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth):
         # End board, return the value only
@@ -64,13 +64,14 @@ class MyPlayer:
 
         # Swap values - changing evaluation between opponent and the player
         def value(board, alpha, beta):
-            return self.alpha_beta_search(symbol, board, -beta, -alpha, depth - 1).points
+            return self.alpha_beta_search(symbol, board, -beta, -alpha, depth - 1).points * -1
 
         moves = self.get_valid_moves(board, symbol)
         if not moves:
             if not self.get_valid_moves(board, self.find_opponent(symbol)):
                 return Move(None, self.final_value(symbol, board)).points
-            return value(board, alpha, beta)
+            return Move(None, value(board, alpha, beta))
+
         # If the move is worse than the previous - skip the child nodes
         best_move = moves[0]
         for move in moves:
@@ -144,10 +145,11 @@ class MyPlayer:
         else:
             return valid_moves
 
-    def check_move(self, board, r, c, symbol):
+    def check_move(self, board, r, c, symbol, bfs=True):
         # inspect if the field is a valid move for a given symbol
         # Check all directions for other symbol and count the possible points
         # h and v are directional vectors
+        # bfs true --> checks only if the move is valid, doesn t count the points - for faster heuristics
         points = 0
         for h in [-1, 0, 1]:
             for v in [-1, 0, 1]:
@@ -156,6 +158,8 @@ class MyPlayer:
                         examined = board[r + h][c + v]
                         if examined != self.space and examined != symbol:
                             points += self.count_points(board, r + h, c + v, h, v)
+                        if points > 0 and bfs:
+                            return points
         # return points gain for current move
         # returns 0 if the move is not valid
         return points
