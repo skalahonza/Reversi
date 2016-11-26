@@ -4,18 +4,7 @@
 # single thread only
 from copy import deepcopy
 
-# board mask represents the strategic value for each field
-board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [120, -20, 20, 5, 5, 20, -20, 120]
-              ]
-
-# Values for endgame boards are big constants.
+# Tombstone constants
 MAX_SCORE = 1176  # biggest score achievable
 MIN_SCORE = -MAX_SCORE
 
@@ -29,7 +18,7 @@ class Move:
 
 
 class MyPlayer:
-    """Player targets the highest gain for current move"""
+    """ Predict the game 4 moves ahead """
 
     def __init__(self, my_color, opponent_color):
         self.name = 'skalaja7'  # username student id
@@ -205,9 +194,8 @@ class MyPlayer:
 
 
 def is_field_legit(r, c):
-    # checks if the field is located within a board
     """
-
+    checks if the field is located within a board
     :rtype: bool
     """
     return 0 <= r < 8 and 0 <= c < 8
