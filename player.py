@@ -51,7 +51,7 @@ class MyPlayer:
     def alpha_beta_search(self, symbol, board, alpha, beta, depth):
         # End board, return the value only
         if depth == 0:
-            return Move(None, self.eval_board(board, symbol))
+            return Move(None, self.score(board, symbol))
 
         # Swap values - changing evaluation between opponent and the player
         def value(board, alpha, beta):
