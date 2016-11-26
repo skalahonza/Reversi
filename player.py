@@ -33,11 +33,12 @@ class MyPlayer:
         if not self.valid_moves:
             return None
         move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
-        return move[1].move
+        return move.move
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth, evaluate):
         """
         Find the best legal move for player, searching to the specified depth. Standard alpha beta algorithm
+        :rtype: Move
         :param symbol: player color
         :param board: playing board
         :param alpha: Maximum gain for me
@@ -48,21 +49,22 @@ class MyPlayer:
         """
         # last examined board - return the board value for current symbol
         if depth == 0:
-            return evaluate(board, symbol), None
+            return Move(None, evaluate(board, symbol))
 
         def value(board, alpha, beta):
             # Compute the board value for the opponent of the current symbol
-            return -self.alpha_beta_search(self.find_opponent(symbol), board, -beta, -alpha, depth - 1, evaluate)[0]
+            return -self.alpha_beta_search(self.find_opponent(symbol), board, -beta, -alpha, depth - 1, evaluate).points
 
         moves = self.get_valid_moves(board, symbol)
         if not moves:
             if not self.get_valid_moves(board, self.find_opponent(symbol)):
                 # last round - return the last board score
-                return self.final_value(symbol, board), None
+                return Move(None, self.final_value(symbol, board))
             # cannot play this round - return the board value unchanged
-            return value(board, alpha, beta), None
+            return Move(None, value(board, alpha, beta))
 
         best_move = moves[0]
+        best_move.points = alpha
         for move in moves:
             if alpha >= beta:
                 # Skip those moves, that would bring disadvantage to the opponent
@@ -74,7 +76,8 @@ class MyPlayer:
                 # Found new maximum - replace old maximum
                 alpha = val
                 best_move = move
-        return alpha, best_move
+                best_move.points = alpha
+        return best_move
 
     def final_value(self, symbol, board):
         """If I win the last board return MAX_SCORE so the alpha beta uses this branch"""
