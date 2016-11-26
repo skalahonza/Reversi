@@ -4,6 +4,21 @@
 # single thread only
 from copy import deepcopy
 
+# board mask represents the strategic value for each field
+board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
+              [-20, -40, -5, -5, -5, -5, -40, -20],
+              [20, -5, 15, 3, 3, 15, -5, 20],
+              [5, -5, 3, 3, 3, 3, -5, 5],
+              [5, -5, 3, 3, 3, 3, -5, 5],
+              [20, -5, 15, 3, 3, 15, -5, 20],
+              [-20, -40, -5, -5, -5, -5, -40, -20],
+              [120, -20, 20, 5, 5, 20, -20, 120]
+              ]
+
+# Values for endgame boards are big constants.
+MAX_SCORE = sum(map(abs, board_mask))
+MIN_SCORE = -MAX_SCORE
+
 
 class Move:
     """Stores the move coordinates with the points gained by playing it"""
@@ -38,35 +53,80 @@ class MyPlayer:
         # get valid moves for my player
         if not self.valid_moves:
             return None
-
+        return self.valid_moves[0].move
         # Examine
-        return (self.ideal_move(3, self.valid_moves)).move
+        # return (self.ideal_move(3, self.valid_moves)).move
 
-    def ideal_move(self, depth_level, moves):
-        """ Examines moves until it reaches the given space depth_level """
-        while depth_level > 0:
-            depth_level -= 1
-        pass
+    def alpha_beta_search(self, symbol, board, alpha, beta, depth):
+        # End board, return the value only
+        if depth == 0:
+            return Move(None, self.eval_board(board, symbol))
 
-    def eval_board(self, board, player, opponent):
-        board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
-                      [-20, -40, -5, -5, -5, -5, -40, -20],
-                      [20, -5, 15, 3, 3, 15, -5, 20],
-                      [5, -5, 3, 3, 3, 3, -5, 5],
-                      [5, -5, 3, 3, 3, 3, -5, 5],
-                      [20, -5, 15, 3, 3, 15, -5, 20],
-                      [-20, -40, -5, -5, -5, -5, -40, -20],
-                      [120, -20, 20, 5, 5, 20, -20, 120]
-                      ]
-        scorePlayer = 0
-        scoreOpponent = 0
-        for r in board:
-            for c in board[r]:
-                if board[r][c] == player:
-                    scorePlayer += board_mask[r][c]
-                elif board[r][c] == opponent:
-                    scoreOpponent += board_mask[r][c]
-        return scorePlayer - scoreOpponent
+        # Swap values - changing evaluation between opponent and the player
+        def value(board, alpha, beta):
+            return self.alpha_beta_search(symbol, board, -beta, -alpha, depth - 1).points
+
+        moves = self.get_valid_moves(board, symbol)
+        if not moves:
+            if not self.get_valid_moves(board, self.find_opponent(symbol)):
+                return Move(None, self.final_value(symbol, board)).points
+            return value(board, alpha, beta)
+        # If the move is worse than the previous - skip the child nodes
+        best_move = moves[0]
+        for move in moves:
+            if alpha >= beta:
+                break
+            new_board = self.simulate_move(board, move.move, symbol)
+            val = value(new_board, alpha, beta)
+            if val > alpha:
+                # if I found a new best score for me, save this node as a best move
+                # also save the new maximum
+                alpha = val
+                best_move = move
+        return best_move
+
+    def final_value(self, symbol, board):
+        """The game is over--find the value of this board to player."""
+        diff = self.score(board, symbol)
+        if diff < 0:
+            return MIN_SCORE
+        elif diff > 0:
+            return MAX_SCORE
+        return diff
+
+    @staticmethod
+    def find_opponent(symbol):
+        # Find the opponent for the given symbol
+        # Symbol = 1 --> returns 0
+        # Symbol = 0 --> returns 1
+        if symbol == 1:
+            return 0
+        elif symbol == 0:
+            return 1
+        else:
+            return -1
+
+    def score(self, board, symbol):
+        """ Counts number of stones minus opponents stones """
+        score = 0
+        for r in range(8):
+            for c in range(8):
+                if board[r][c] == symbol:
+                    score += 1
+                elif board[r][c] == self.find_opponent(symbol):
+                    score -= 1
+        return score
+
+    def eval_board(self, board, symbol):
+        """ Evaluates board for the given symbol """
+        score = 0
+        for r in range(8):
+            for c in range(8):
+                if board[r][c] == symbol:
+                    score += board_mask[r][c]
+                elif board[r][c] == self.find_opponent(symbol):
+                    score -= board_mask[r][c]
+        return score
 
     def get_valid_moves(self, board, symbol):
         valid_moves = []
@@ -105,8 +165,6 @@ class MyPlayer:
         # k is a scalar multipliers for directional vectors
         # returns 0 if the move is not valid - space found between stones
         symbol = board[r][c]
-        if symbol == self.space:
-            return 0
         count = 1
         for k in range(1, 9):
             if is_field_legit(r + k * horizontal_direction, c + k * vertical_direction):
@@ -120,8 +178,12 @@ class MyPlayer:
                 return 0
         return count
 
-    def simulate_move(self, board, r, c, symbol):
+    def simulate_move(self, board, move, symbol):
         """ Performs a move on the board and returns a new (transformed) board """
+        if move == None:
+            return board
+        r = move[0]
+        c = move[1]
         board_copy = deepcopy(board)
         board_copy[r][c] = symbol
 
@@ -172,7 +234,7 @@ if __name__ == "__main__":
     for row in sample_board:
         print(row)
     print("------------")
-    move = player.move(sample_board)
+    pmove = player.move(sample_board)
     """for item in player.valid_moves:
         sample_board[item.move[0]][item.move[1]] = "X"""
 
@@ -182,8 +244,8 @@ if __name__ == "__main__":
     for item in player.valid_moves:
         print(item.move, " - ", item.points)
 
-    print("returned: ", move)
-    board = player.simulate_move(sample_board, move[0], move[1], player.my_color)
+    print("returned: ", pmove)
+    playBoard = player.simulate_move(sample_board, pmove, player.my_color)
     print("------------")
-    for row in board:
+    for row in playBoard:
         print(row)
