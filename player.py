@@ -109,9 +109,13 @@ class MyPlayer:
         return score
 
     def get_valid_moves(self, board, symbol):
+        """
+        Check all fields, and find out how many points I get if I play there
+        :param board: The board that the moves should be found on
+        :param symbol: Examined symbol (player color)
+        :return: Collection ofall valid moves for given symbol on a current board
+        """
         valid_moves = []
-        # returns all valid moves for given symbol on a current board
-        # Check all fields, and find out how many points I get if I play there
         for r in range(8):
             for c in range(8):
                 # exam free spaces only
