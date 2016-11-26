@@ -69,7 +69,7 @@ class MyPlayer:
         moves = self.get_valid_moves(board, symbol)
         if not moves:
             if not self.get_valid_moves(board, self.find_opponent(symbol)):
-                return Move(None, self.final_value(symbol, board)).points
+                return Move(None, self.final_value(symbol, board))
             return Move(None, value(board, alpha, beta))
 
         # If the move is worse than the previous - skip the child nodes
@@ -149,7 +149,7 @@ class MyPlayer:
         # inspect if the field is a valid move for a given symbol
         # Check all directions for other symbol and count the possible points
         # h and v are directional vectors
-        # bfs true --> checks only if the move is valid, doesn t count the points - for faster heuristics
+        # bfs true --> checks only if the move is valid, doesn't count the points - for faster heuristics
         points = 0
         for h in [-1, 0, 1]:
             for v in [-1, 0, 1]:
