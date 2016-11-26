@@ -43,60 +43,26 @@ class MyPlayer:
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         if not self.valid_moves:
             return None
-        move = self.alphabeta(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.eval_board)
-        # move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 3)
+        move = self.alphabeta(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
         return move[1].move
-
-    def alpha_beta_search(self, symbol, board, alpha, beta, depth):
-        # End board, return the value only
-        if depth == 0:
-            return Move(None, self.score(board, symbol))
-
-        # Swap values - changing evaluation between opponent and the player
-        def value(board, alpha, beta):
-            return -self.alpha_beta_search(self.find_opponent(symbol), board, -beta, -alpha, depth - 1).points
-
-        moves = self.get_valid_moves(board, symbol)
-        if not moves:
-            if not self.get_valid_moves(board, self.find_opponent(symbol)):
-                # Last round
-                return Move(None, self.final_value(symbol, board))
-            # No legal moves for current symbol
-            return Move(None, value(board, alpha, beta))
-
-        # If the move is worse than the previous - skip the child nodes
-        best_move = moves[0]
-        for move in moves:
-            if alpha >= beta:
-                # If one of the legal moves leads to a better score than beta, then
-                # the opponent will avoid this branch, so we can quit looking.
-                break
-            new_board = self.simulate_move(board, move.move, symbol)
-            val = value(new_board, alpha, beta)
-            if val > alpha:
-                # if I found a new best score for me, save this node as a best move
-                # also save the new maximum
-                alpha = val
-                best_move.points = val
-                best_move = move
-        return best_move
 
     def alphabeta(self, player, board, alpha, beta, depth, evaluate):
         """
         Find the best legal move for player, searching to the specified depth.  Like
         minimax, but uses the bounds alpha and beta to prune branches.
+        :param player: player color
+        :param board: playing board
+        :param alpha: Maximum gain for me
+        :param beta: Max opponent gain
+        :param depth: How many moves ahead I see
+        :param evaluate: Function that computes the board value
+        :return:
         """
         if depth == 0:
             return evaluate(board, player), None
 
         def value(board, alpha, beta):
-            # Like in `minimax`, the value of a board is the opposite of its value
-            # to the opponent.  We pass in `-beta` and `-alpha` as the alpha and
-            # beta values, respectively, for the opponent, since `alpha` represents
-            # the best score we know we can achieve and is therefore the worst score
-            # achievable by the opponent.  Similarly, `beta` is the worst score that
-            # our opponent can hold us to, so it is the best score that they can
-            # achieve.
+            # Compute the board value for the opponent
             return -self.alphabeta(self.find_opponent(player), board, -beta, -alpha, depth - 1, evaluate)[0]
 
         moves = self.get_valid_moves(board, player)
@@ -108,19 +74,19 @@ class MyPlayer:
         best_move = moves[0]
         for move in moves:
             if alpha >= beta:
-                # If one of the legal moves leads to a better score than beta, then
-                # the opponent will avoid this branch, so we can quit looking.
+                # Skip those moves, that would bring disadvantage to the opponent
+                # The opponent will not play badly on purpose - no need to evaluate those nodes
+                # Expect the best possible move from the opponent
                 break
             val = value(self.simulate_move(board, move.move, player), alpha, beta)
             if val > alpha:
-                # If one of the moves leads to a better score than the current best
-                # achievable score, then replace it with this one.
+                # Found new maximum - replace old maximum
                 alpha = val
                 best_move = move
         return alpha, best_move
 
     def final_value(self, symbol, board):
-        """The game is over--find the value of this board to player."""
+        """The game is over -- find the value of this board to player."""
         diff = self.score(board, symbol)
         if diff < 0:
             return MIN_SCORE
