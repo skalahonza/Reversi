@@ -43,27 +43,26 @@ class MyPlayer:
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         if not self.valid_moves:
             return None
-        move = self.alphabeta(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
+        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
         return move[1].move
 
-    def alphabeta(self, player, board, alpha, beta, depth, evaluate):
+    def alpha_beta_search(self, player, board, alpha, beta, depth, evaluate):
         """
-        Find the best legal move for player, searching to the specified depth.  Like
-        minimax, but uses the bounds alpha and beta to prune branches.
+        Find the best legal move for player, searching to the specified depth. Standard alpha beta algorithm
         :param player: player color
         :param board: playing board
         :param alpha: Maximum gain for me
         :param beta: Max opponent gain
         :param depth: How many moves ahead I see
         :param evaluate: Function that computes the board value
-        :return:
+        :return: The considering given ammount of moves
         """
         if depth == 0:
             return evaluate(board, player), None
 
         def value(board, alpha, beta):
             # Compute the board value for the opponent
-            return -self.alphabeta(self.find_opponent(player), board, -beta, -alpha, depth - 1, evaluate)[0]
+            return -self.alpha_beta_search(self.find_opponent(player), board, -beta, -alpha, depth - 1, evaluate)[0]
 
         moves = self.get_valid_moves(board, player)
         if not moves:
@@ -86,13 +85,13 @@ class MyPlayer:
         return alpha, best_move
 
     def final_value(self, symbol, board):
-        """The game is over -- find the value of this board to player."""
-        diff = self.score(board, symbol)
-        if diff < 0:
+        """If I win the last board return MAX_SCORE so the alpha beta uses this branch"""
+        score = self.score(board, symbol)
+        if score < 0:
             return MIN_SCORE
-        elif diff > 0:
+        elif score > 0:
             return MAX_SCORE
-        return diff
+        return score
 
     @staticmethod
     def find_opponent(symbol):
@@ -115,17 +114,6 @@ class MyPlayer:
                     score += 1
                 elif board[r][c] == self.find_opponent(symbol):
                     score -= 1
-        return score
-
-    def eval_board(self, board, symbol):
-        """ Evaluates board for the given symbol """
-        score = 0
-        for r in range(8):
-            for c in range(8):
-                if board[r][c] == symbol:
-                    score += board_mask[r][c]
-                elif board[r][c] == self.find_opponent(symbol):
-                    score -= board_mask[r][c]
         return score
 
     def get_valid_moves(self, board, symbol):
@@ -218,6 +206,10 @@ class MyPlayer:
 
 def is_field_legit(r, c):
     # checks if the field is located within a board
+    """
+
+    :rtype: bool
+    """
     return 0 <= r < 8 and 0 <= c < 8
 
 
