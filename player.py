@@ -144,11 +144,18 @@ class MyPlayer:
         return points
 
     def count_points(self, board, r, c, horizontal_direction, vertical_direction):
-        # Count how many stones are in a given direction
-        # k is a scalar multipliers for directional vectors
-        # returns 0 if the move is not valid - space found between stones
+        """
+        Count how many stones are in a given direction
+        :param board:
+        :param r:
+        :param c:
+        :param horizontal_direction:
+        :param vertical_direction:
+        :return: 0 if the move is not valid - space found between stones
+        """
         symbol = board[r][c]
         count = 1
+        # k is a scalar multipliers for directional vectors
         for k in range(1, 9):
             if is_field_legit(r + k * horizontal_direction, c + k * vertical_direction):
                 if board[r + k * horizontal_direction][c + k * vertical_direction] == self.space:
