@@ -43,7 +43,7 @@ class MyPlayer:
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         if not self.valid_moves:
             return None
-        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
+        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.eval_board)
         return move.move
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth, evaluate):
@@ -120,6 +120,17 @@ class MyPlayer:
                     score += 1
                 elif board[r][c] == self.find_opponent(symbol):
                     score -= 1
+        return score
+
+    def eval_board(self, board, symbol):
+        """ Evaluates board for the given symbol """
+        score = 0
+        for r in range(8):
+            for c in range(8):
+                if board[r][c] == symbol:
+                    score += board_mask[r][c]
+                elif board[r][c] == self.find_opponent(symbol):
+                    score -= board_mask[r][c]
         return score
 
     def get_valid_moves(self, board, symbol):
