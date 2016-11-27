@@ -3,6 +3,7 @@ import greedy
 from game_board import GameBoard
 import time, getopt, sys
 import player
+import dummier
 
 
 class HeadlessReversiCreator(object):
@@ -109,7 +110,8 @@ if __name__ == "__main__":
         print('No arguments given.\nRunning game with two random players.')
         # TODO Change players
         #p1 = greedy.MyPlayer(p1_color, p2_color)
-        p1 = random_player.MyPlayer(p1_color, p2_color)
+        #p1 = random_player.MyPlayer(p1_color, p2_color)
+        p1 = dummier.MyPlayer(p1_color, p2_color)
         p2 = player.MyPlayer(p2_color, p1_color)
         game = HeadlessReversiCreator(p1, p1_color, p2, p2_color, 8)
         game.play_game()

@@ -32,7 +32,7 @@ class MyPlayer:
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         if not self.valid_moves:
             return None
-        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 3, self.score)
+        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
         return move.move
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth, evaluate):

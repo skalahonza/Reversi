@@ -4,17 +4,6 @@
 # single thread only
 from copy import deepcopy
 
-# board mask represents the strategic value for each field
-board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [120, -20, 20, 5, 5, 20, -20, 120]
-              ]
-
 # Values for endgame boards are big constants.
 MAX_SCORE = 1176  # biggest score achievable
 MIN_SCORE = -MAX_SCORE
@@ -123,7 +112,17 @@ class MyPlayer:
         return score
 
     def eval_board(self, board, symbol):
-        """ Evaluates board for the given symbol """
+        """ Evaluates board for the given symbol using board mask"""
+        # board mask represents the strategic value for each field
+        board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
+                      [-20, -40, -5, -5, -5, -5, -40, -20],
+                      [20, -5, 15, 3, 3, 15, -5, 20],
+                      [5, -5, 3, 3, 3, 3, -5, 5],
+                      [5, -5, 3, 3, 3, 3, -5, 5],
+                      [20, -5, 15, 3, 3, 15, -5, 20],
+                      [-20, -40, -5, -5, -5, -5, -40, -20],
+                      [120, -20, 20, 5, 5, 20, -20, 120]
+                      ]
         score = 0
         for r in range(8):
             for c in range(8):
