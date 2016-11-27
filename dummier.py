@@ -4,19 +4,8 @@
 # single thread only
 from copy import deepcopy
 
-# board mask represents the strategic value for each field
-board_mask = [[120, -20, 20, 5, 5, 20, -20, 120],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [5, -5, 3, 3, 3, 3, -5, 5],
-              [20, -5, 15, 3, 3, 15, -5, 20],
-              [-20, -40, -5, -5, -5, -5, -40, -20],
-              [120, -20, 20, 5, 5, 20, -20, 120]
-              ]
-
-# Values for endgame boards are big constants.
-MAX_SCORE = 1176  # biggest score achievable
+# Tombstone constants
+MAX_SCORE = 64  # biggest score achievable
 MIN_SCORE = -MAX_SCORE
 
 
@@ -32,7 +21,7 @@ class MyPlayer:
     """ Predict the game 4 moves ahead """
 
     def __init__(self, my_color, opponent_color):
-        self.name = 'skalaja7'  # username student id
+        self.name = 'dummier'  # username student id
         self.my_color = my_color
         self.opponent_color = opponent_color
         self.space = -1
@@ -43,7 +32,7 @@ class MyPlayer:
         self.valid_moves = self.get_valid_moves(board, self.my_color)
         if not self.valid_moves:
             return None
-        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 4, self.score)
+        move = self.alpha_beta_search(self.my_color, board, MIN_SCORE, MAX_SCORE, 3, self.score)
         return move.move
 
     def alpha_beta_search(self, symbol, board, alpha, beta, depth, evaluate):
