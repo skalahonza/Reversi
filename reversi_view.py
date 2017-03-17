@@ -2,6 +2,7 @@ try:
     # for Python2
     from Tkinter import Tk,Canvas,Label,IntVar,Scale,Button,StringVar,OptionMenu,HORIZONTAL,font
 except ImportError:
+    pass
     # for Python3
     from tkinter import Tk, Canvas,Label,IntVar,Scale,Button,StringVar,OptionMenu,HORIZONTAL,font
     

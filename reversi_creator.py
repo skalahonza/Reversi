@@ -1,9 +1,13 @@
+import dummier
+import greedy
+import player
 import random_player
 from game_board import GameBoard
 from reversi_view import ReversiView
 import time
-import multiprocessing 
+import multiprocessing
 import copy, getopt, sys
+
 
 class ReversiCreator(object):
     '''
@@ -18,8 +22,8 @@ class ReversiCreator(object):
         player_class = player_array['random']
         self.player1_color = 0
         self.player2_color = 1
-        self.player1 = player_class(self.player1_color,self.player2_color)
-        self.player2 = player_class(self.player2_color,self.player1_color)
+        self.player1 = player_class(self.player1_color, self.player2_color)
+        self.player2 = player_class(self.player2_color, self.player1_color)
         self.board = GameBoard()
         self.sleep_time_ms = 200;
         self.gui = ReversiView()
@@ -29,13 +33,13 @@ class ReversiCreator(object):
         self.clear_game()
         self.paused = False
         print('gui created')
-        
+
     def clear_game(self):
         '''
         Sets the game state to the initial value.
         '''
         print('clear_game')
-        self.max_times_ms = [0 , 0]
+        self.max_times_ms = [0, 0]
         self.board.init_board()
         self.board.clear()
         stones = self.board.get_score()
@@ -59,9 +63,7 @@ class ReversiCreator(object):
         move = self.current_player.move(self.board.get_board_copy())
         endTime = time.time()
         moveTime = (endTime - start_time) * 1000
-        q.put({'time':moveTime, 'move':move})
-
-        
+        q.put({'time': moveTime, 'move': move})
 
     def play_game(self, interactivePlayerColor=-1):
         '''
@@ -73,15 +75,15 @@ class ReversiCreator(object):
         next_player_id = -1
         self.paused = False
         wrong_move = False
-        #print('play_game')
-        #print(self.player1.my_color)
-        #print(self.player2.my_color)
+        # print('play_game')
+        # print(self.player1.my_color)
+        # print(self.player2.my_color)
         while self.board.can_play(self.current_player, self.current_player_color) and not self.paused:
             if interactivePlayerColor == self.current_player_color:
                 inform_str = 'It is your turn';
                 self.gui.inform(inform_str, 'green')
                 break
-            
+
             q = multiprocessing.Queue()
             p = multiprocessing.Process(target=self.get_player_move, args=(q,))
             p.start()
@@ -92,18 +94,18 @@ class ReversiCreator(object):
                 p.terminate()
                 p.join()
                 player_move_overtime = self.current_player_color
-                
-            
+
             if player_move_overtime != -1:
                 inform_str = 'Player %d move took to long - killed' % (self.current_player_color);
                 self.gui.inform(inform_str, 'red')
                 break
-            
+
             returned_move = q.get()
             move_time = returned_move['time']
             move = returned_move['move']
             self.max_times_ms[self.current_player_color] = max(self.max_times_ms[self.current_player_color], move_time)
-            print('Player %d wants move [%d,%d]. Move takes %.3f ms.' % (self.current_player_color, move[0], move[1], move_time))
+            print('Player %d wants move [%d,%d]. Move takes %.3f ms.' % (
+            self.current_player_color, move[0], move[1], move_time))
             next_player_id = -1
 
             if self.board.is_correct_move(move, self.current_player, self.current_player_color):
@@ -118,16 +120,15 @@ class ReversiCreator(object):
                 self.gui.wrong_move = True
                 wrong_move = True
                 break
-                
+
             self.gui.print_board_state()
             self.gui.print_score()
             self.gui.print_move_max_times(self.max_times_ms)
-            time.sleep (self.sleep_time_ms / 1000.0)
+            time.sleep(self.sleep_time_ms / 1000.0)
 
         if next_player_id == -1 and not self.paused and not wrong_move:
             self.print_final_info()
-        
-        
+
     def play_move(self, move):
         '''
         Play move for current player.
@@ -164,10 +165,11 @@ class ReversiCreator(object):
         Prints the info after game is finished.
         '''
         print('print_final_info')
-        stones = self.board.get_score()  
-        self.gui.print_num_stones(stones) 
+        stones = self.board.get_score()
+        self.gui.print_num_stones(stones)
         self.gui.print_move_max_times(self.max_times_ms)
-        final_score = 'Final score:\tPlayer%d:Player%d\t[%d:%d]' % (self.player1_color, self.player2_color, stones[0], stones[1])
+        final_score = 'Final score:\tPlayer%d:Player%d\t[%d:%d]' % (
+        self.player1_color, self.player2_color, stones[0], stones[1])
         print(final_score)
         who_wins = 'Draw'
         if stones[0] > stones[1]:
@@ -177,16 +179,17 @@ class ReversiCreator(object):
         print(who_wins)
         self.gui.inform([final_score, who_wins], 'green')
 
-if __name__ == "__main__": 
-    (choices,args) = getopt.getopt(sys.argv[1:],"")
-    players_dict = {'random':random_player.MyPlayer}
+
+if __name__ == "__main__":
+    (choices, args) = getopt.getopt(sys.argv[1:], "")
+    players_dict = {'random': random_player.MyPlayer, 'SkaLich': player.MyPlayer, 'Greedy': greedy.MyPlayer, 'Dummy SkaLich':dummier.MyPlayer}
     for arg in args:
         try:
-            print('Adding player from %s.py file' %(arg))
+            print('Adding player from %s.py file' % (arg))
             player_module = __import__(arg)
             players_dict[arg] = player_module.MyPlayer
         except:
-            print('ERROR: Unable to add player from %s.py file' %(arg))
+            print('ERROR: Unable to add player from %s.py file' % (arg))
 
     game = ReversiCreator(players_dict)
     game.gui.root.mainloop()

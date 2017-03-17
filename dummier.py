@@ -18,7 +18,7 @@ class Move:
 
 
 class MyPlayer:
-    """ Predict the game 4 moves ahead """
+    """ Predict the game 4 moves ahead and evals only the ammount of stones"""
 
     def __init__(self, my_color, opponent_color):
         self.name = 'dummier'  # username student id
